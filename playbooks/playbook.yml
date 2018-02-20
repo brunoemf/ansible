@@ -1,4 +1,24 @@
 ---
 - hosts: test
-  gather_facts: false  
+  gather_facts: false
   become: yes
+
+  vars:
+     packages:
+        - nodejs
+     services:
+        - apache2
+        - mysql
+
+   tasks:
+      - name: Inslando pacotes
+        apt:
+           name: "{{ item }}"
+           state: present
+        with_items: "{{ packages }}"
+
+      - name: Confirmar se os serviços estão rodando
+        service:
+           name: "{{ item }}"
+           state: running
+        with_items: "{{ services }}"
