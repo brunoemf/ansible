@@ -1,2 +1,4 @@
 ---
-node:
+- hosts: test
+  gather_facts: false  
+  become: yes
