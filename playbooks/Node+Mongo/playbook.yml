@@ -8,10 +8,6 @@
    - name: Baixando Sources do Nodejs
      shell: curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
 
-   - name: Inslando o nodejs
-     apt:
-        name: nodejs
-        state: present
 
    - name: Importando a public key para instalação do MongoDB
      apt_key:
@@ -21,16 +17,17 @@
    - name: Create a list file for MongoDB
      shell: echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.6 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.6.list
 
-   - name: Atualizando repositório
+   - name: Instalando pacotes
      apt:
-        update_cache: yes
-
-   - name: Instalando pacotes do MongoDB
-     apt:
-        name: mongodb-org
+        name: "{{ item }}"
         state: present
+        update_cache: true
+     with_items:
+        - nodejs
+        - mongodb-org
 
-   - copy:
+   - name: Copiando arquivo para configuração do serviço MongoDB
+     copy:
       src: ./files/mongodb.service
       dest: /etc/systemd/system/
       force: yes
@@ -42,8 +39,10 @@
      systemd:
         name: mongodb
         enabled: yes
+     notify: reiniciar mongo
 
-   - name: Verificando o serviço do MongoDB
-     service:
-        name: mongodb
-        state: started
+  handlers:
+     - name: reiniciar mongo
+       service:
+          name: mongodb
+          state: restarted
