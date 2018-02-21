@@ -30,6 +30,19 @@
         name: mongodb-org
         state: present
 
+   - copy:
+      src: ./files/mongodb.service
+      dest: /etc/systemd/system/
+      force: yes
+
+   - name: Iniciando o serviço recém criado
+     systemd: state=started name=mongodb
+
+   - name: Habilitando o serviço do mongo para startup boot
+     systemd:
+        name: mongodb
+        enabled: yes
+
    - name: Verificando o serviço do MongoDB
      service:
         name: mongodb
