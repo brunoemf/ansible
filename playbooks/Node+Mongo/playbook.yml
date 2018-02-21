@@ -3,11 +3,16 @@
   become: yes
   remote_user: ubuntu
   gather_facts: false
+
+  vars:
+     pacotes:
+        - nodejs
+        - mongodb-org
+
   tasks:
 
    - name: Baixando Sources do Nodejs
      shell: curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
-
 
    - name: Importando a public key para instalação do MongoDB
      apt_key:
@@ -22,9 +27,7 @@
         name: "{{ item }}"
         state: present
         update_cache: true
-     with_items:
-        - nodejs
-        - mongodb-org
+     with_items: "{{ pacotes }}"
 
    - name: Copiando arquivo para configuração do serviço MongoDB
      copy:
